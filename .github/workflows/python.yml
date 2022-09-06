@@ -47,7 +47,10 @@ jobs:
 #      run: |
 #        pytest tests
     - name: discover
-      run: ls /
+      run: |
+        ls /data
+        ls /media
+        ls /home
 
     - name: send telegram message on success
       uses: appleboy/telegram-action@master
