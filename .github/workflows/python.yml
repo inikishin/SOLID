@@ -44,7 +44,7 @@ jobs:
 
     - name: Test with pytest
       run: |
-        pytest
+        pytest tests
 
     - name: send telegram message on success
       uses: appleboy/telegram-action@master
