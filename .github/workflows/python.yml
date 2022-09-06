@@ -27,6 +27,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install wemake-python-styleguide
+        pip install flake8-html
         pip install pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
@@ -36,15 +37,17 @@ jobs:
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --format=html
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --format=html --htmldir=flake-report
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --format=html
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --format=html --htmldir=flake-report
 
       # Добавить проверку типов с помощью mypy.
 
 #    - name: Test with pytest
 #      run: |
 #        pytest tests
+    - name: discover
+      run: ls /
 
     - name: send telegram message on success
       uses: appleboy/telegram-action@master
@@ -57,5 +60,6 @@ jobs:
           CI successfully completed
           
           See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+        document:
 
     # Исправить все недочёты, найденные линтерами и статическими анализаторами.
