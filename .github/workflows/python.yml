@@ -11,7 +11,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    # Сделать проверку работоспособности кода на версиях python 3.7, 3.8 и 3.9. В этом поможет использование strategy.
+    strategy:
+      matrix:
+        python-version: [ "3.7", "3.8", "3.9" ]
 
     steps:
     - uses: actions/checkout@v2
@@ -52,5 +54,16 @@ jobs:
         tag_with_ref: true
 
     # Добавить отправку сообщения об успешности прохождения CI в телеграм.
+    - name: send telegram message on success
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+          Repository: ${{ github.repository }}
+          
+          CI successfully completed
+          
+          See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
 
     # Исправить все недочёты, найденные линтерами и статическими анализаторами.
