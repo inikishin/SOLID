@@ -1,0 +1,57 @@
+name: Python application
+
+on:
+  push:
+    branches: [ master ]
+  # Сделать срабатывание CI-процесса на новые pull request в master-ветку.
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    # Сделать проверку работоспособности кода на версиях python 3.7, 3.8 и 3.9. В этом поможет использование strategy.
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+        pip install -r tests/requirements.txt
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # Исправить проверку линтерами.
+      # flake8 желательно заменить на wemake-python-styleguide
+      # Сделать вывод в красивый html-файл. В настройках линтеров есть такая опция.
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      # Добавить проверку типов с помощью mypy.
+
+    - name: Test with pytest
+      run: |
+        pytest tests/unit
+
+    - name: Push to Docker Hub
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        repository: my-docker-hub-namespace/my-docker-hub-repository
+        tag_with_ref: true
+
+    # Добавить отправку сообщения об успешности прохождения CI в телеграм.
+
+    # Исправить все недочёты, найденные линтерами и статическими анализаторами.
