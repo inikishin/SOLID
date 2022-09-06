@@ -42,9 +42,9 @@ jobs:
 
       # Добавить проверку типов с помощью mypy.
 
-    - name: Test with pytest
-      run: |
-        pytest tests
+#    - name: Test with pytest
+#      run: |
+#        pytest tests
 
     - name: send telegram message on success
       uses: appleboy/telegram-action@master
